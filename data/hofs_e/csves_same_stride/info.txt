@@ -1,0 +1,12 @@
+Unexpected group sizes: []
+group :  2654 length :  2654 train :  2123 test :  265 val :  266
+Unexpected group sizes: []
+group :  2654 length :  7962 train :  6369 test :  795 val :  798
+Unexpected group sizes: []
+group :  2654 length :  13270 train :  10615 test :  1325 val :  1330
+Unexpected group sizes: []
+group :  2654 length :  18578 train :  14861 test :  1855 val :  1862
+Unexpected group sizes: []
+group :  2654 length :  23886 train :  19107 test :  2385 val :  2394
+Unexpected group sizes: []
+group :  2654 length :  29194 train :  23353 test :  2915 val :  2926
