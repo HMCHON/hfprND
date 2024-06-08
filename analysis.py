@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the dataset
-file_path = 'combined_result.csv'
+file_path = 'combined_results1.csv'
 df = pd.read_csv(file_path)
 df.head()
 
@@ -27,12 +27,12 @@ correlation_matrix = df.corr()
 print(correlation_matrix)
 """
                 Group            LSTM            conv          augmented         frame       accuracy       
- Group       1.000000e+00,    3.854941e-17,  -5.913923e-17,   5.396917e-18,   1.236958e-16,  -0.077577
- frame       3.854941e-17,    1.000000e+00,   1.444622e-17,   3.777842e-17,   1.805778e-17,  -0.076148
- LSTM       -5.913923e-17,    1.444622e-17,   1.000000e+00,   4.965889e-18,  -1.913813e-16,   0.013839
- augmented   5.396917e-18,    3.777842e-17,   4.965889e-18,   1.000000e+00,  -1.480738e-16,   0.035470
- conv        1.236958e-16,    1.805778e-17,  -1.913813e-16,  -1.480738e-16,   1.000000e+00,  -0.052751
- accuracy   -7.757747e-02,  - 7.614803e-02,   1.383894e-02,   3.547049e-02,  -5.275072e-02,   1.000000
+ Group       1.000000e+00,   -7.709882e-17,   -3.936596e-16,   2.004569e-17,   -8.848312e-17,   -0.065000
+ frame      -7.709882e-17,    1.000000e+00,   -1.047351e-16,  -9.868649e-17,   -4.333867e-17,   -0.046270
+ LSTM       -3.936596e-16,   -1.047351e-16,    1.000000e+00,  -2.979534e-17,   -9.146123e-17,   -0.028995
+ augmented   2.004569e-17,    -9.868649e-17,  -2.979534e-17,   1.000000e+00,   -2.166933e-17,   -0.021867
+ conv       -8.848312e-17,   -4.333867e-17,   -9.146123e-17,  -2.166933e-17,    1.000000e+00,    0.014138
+ accuracy   -6.499983e-02,   -4.626967e-02,   -2.899483e-02,  -2.186741e-02,    1.413817e-02,    1.000000
 """
 print('==============================================================================')
 
@@ -72,28 +72,33 @@ print('=========================================================================
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='Group', y='accuracy', data=df)
 plt.title('Accuracy by Group Usage')
-plt.show()
+# plt.show()
+plt.savefig("Accuracy_By_Group_Usage.png")
 
 # Boxplot of accuracy by LSTM usage
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='LSTM', y='accuracy', data=df)
 plt.title('Accuracy by LSTM Usage')
-plt.show()
+# plt.show()
+plt.savefig("Accuracy_By_LSTM_Usage.png")
 
 # Boxplot of accuracy by augmented usage
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='augmented', y='accuracy', data=df)
 plt.title('Accuracy by augmented Usage')
-plt.show()
+# plt.show()
+plt.savefig("Accuracy_By_Augmented_Usage.png")
 
 # Boxplot of accuracy by conv
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='conv', y='accuracy', data=df)
 plt.title('Accuracy by Convolutional Layer Usage')
-plt.show()
+# plt.show()
+plt.savefig("Accuracy_By_Convolutional_Layer.png")
 
 # Boxplot of accuracy by frame
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='frame', y='accuracy', data=df)
 plt.title('Accuracy by frame')
-plt.show()
+# plt.show()
+plt.savefig("Accuracy_By_Frame.png")
