@@ -6,7 +6,7 @@
 #do
 #  for j in {17..28}
 #  do
-#    python train.py --n_frame=$i --model="model$j" --dataset="data/hofs_e/csves_same_stride" --save_folder_name="0529_model${j}_NA" --n_category=3
+#    python tr_train.py --n_frame=$i --model="model$j" --dataset="data/hofs_e/csves_same_stride" --save_folder_name="0529_model${j}_NA" --n_category=3
 #  done
 #done
 

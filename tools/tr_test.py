@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from dataset import HOFS_E
+from tr_dataset import HOFS_E
 import numpy as np
 import os
 import re
@@ -102,7 +102,7 @@ def test_model(model_path, dataset, group=False, n_category=3):
 
         # Save the plot as a file
         plot_filename = os.path.join(model_path,
-                                     f'prediction_{os.path.basename(model_name)}_confusion_matrix.png')
+                                     f'test_{os.path.basename(model_name)}_confusion_matrix.png')
         plt.savefig(plot_filename)
         plt.close()  # Close the figure to free memory
 
@@ -113,7 +113,7 @@ def test_model(model_path, dataset, group=False, n_category=3):
         result.append(result_list)
 
 
-    with open(f'{model_path}/pre_result.csv', 'w', newline ='') as file:
+    with open(f'{model_path}/result.csv', 'w', newline ='') as file:
         writer = csv.writer(file)
         writer.writerows(result)
 

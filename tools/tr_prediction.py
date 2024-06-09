@@ -9,6 +9,7 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 import argparse
+import pandas as pd
 
 def list_h5_files(directory):
     output = []
@@ -51,11 +52,6 @@ def test_model(model_path, dataset, group=False, n_category=3):
             results = model.evaluate([test_whole_body, test_left_arm, test_right_arm, test_upper_body, test_lower_body, test_head],
                                      test_label, batch_size=16)
 
-            print("Test loss:", results[0])
-            print("Test accuracy:", results[1])
-            result_list = [frame, results[0], results[1]]
-            result.append(result_list)
-
             predictions = model.predict([test_whole_body, test_left_arm, test_right_arm, test_upper_body, test_lower_body, test_head])
 
 
@@ -73,11 +69,6 @@ def test_model(model_path, dataset, group=False, n_category=3):
             results = model.evaluate([test_whole_body],
                                      test_label, batch_size=16)
 
-            print("Test loss:", results[0])
-            print("Test accuracy:", results[1])
-            result_list = [frame, results[0], results[1]]
-            result.append(result_list)
-
             predictions = model.predict([test_whole_body])
 
         predicted_classes = np.argmax(predictions, axis=1)
@@ -87,6 +78,20 @@ def test_model(model_path, dataset, group=False, n_category=3):
 
         for i in range(len(predicted_classes)):
             print(f"Sample {i}: Actual class {actual_classes[i]}, Predicted class {predicted_classes[i]}")
+
+        print("Test loss:", results[0])
+        print("Test accuracy:", results[1])
+        result_list = [frame, results[0], results[1]]
+        result.append(result_list)
+
+        pre_results = [['actual class','predicted class', 'normal', 'mandown', 'cross']]
+        for idx, pre in enumerate(predictions):
+            pre_result = [actual_classes[idx], predicted_classes[idx], pre[0], pre[1], pre[2]]
+            pre_results.append(pre_result)
+        with open(f'{model_name}_pre_result.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(pre_results)
+
 
         # 실제 클래스와 예측된 클래스를 사용하여 혼동 행렬 생성
         cm = confusion_matrix(actual_classes, predicted_classes)
@@ -102,18 +107,13 @@ def test_model(model_path, dataset, group=False, n_category=3):
 
         # Save the plot as a file
         plot_filename = os.path.join(model_path,
-                                     f'test_{os.path.basename(model_name)}_confusion_matrix.png')
+                                     f'prediction_{os.path.basename(model_name)}_confusion_matrix.png')
         plt.savefig(plot_filename)
         plt.close()  # Close the figure to free memory
 
 
-        print("Test loss:", results[0])
-        print("Test accuracy:", results[1])
-        result_list = [frame, results[0], results[1]]
-        result.append(result_list)
 
-
-    with open(f'{model_path}/result.csv', 'w', newline ='') as file:
+    with open(f'{model_path}/pre_result.csv', 'w', newline ='') as file:
         writer = csv.writer(file)
         writer.writerows(result)
 

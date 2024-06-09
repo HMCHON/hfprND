@@ -1,7 +1,7 @@
 import argparse
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 from tensorflow.keras.utils import to_categorical
-from dataset import HOFS_E
+from tr_dataset import HOFS_E
 from models.model3 import model3
 from models.model4 import model4
 from models.model5 import model5

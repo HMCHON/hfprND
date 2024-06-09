@@ -2,6 +2,8 @@ import numpy as np
 import os
 import pandas as pd
 import csv
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.preprocessing import label_binarize
 
 def expected_calibration_error(probs, labels, num_bins=10):
     """
@@ -36,11 +38,11 @@ def expected_calibration_error(probs, labels, num_bins=10):
 
 
 # 작업 디렉토리 설정
-work_dir = 'work_dir'  # 실제 작업 디렉토리로 변경하세요
+work_dir = '../work_dir'  # 실제 작업 디렉토리로 변경하세요
 
 # 결과를 저장할 데이터프레임 초기화
 result_df = pd.DataFrame(columns=['model_name', 'augmented', 'frame', 'loss', 'accuracy'])
-ece_list = [["Model", "ECE", "Group", "LSTM", "conv", "augmented", "frame"]]
+ece_list = [["Model", "ECE", "Group", "LSTM", "conv", "augmented", "frame", "mAP", "normal_acc", "mandown_acc", "cross_acc"]]
 
 # 작업 디렉토리 내 모든 폴더 순회
 for folder_name in os.listdir(work_dir):
@@ -63,9 +65,14 @@ for folder_name in os.listdir(work_dir):
 
                 probs = []
                 labels = []
+                multi_probs = []
+                normal_acc = []
+                mandown_acc = []
+                cross_acc = []
 
                 for index, row in df.iterrows():
                     actual_class = int(row['actual class'])
+                    predicted_class = int(row['predicted class'])
                     normal = row['normal']
                     mandown = row['mandown']
                     cross = row['cross']
@@ -74,11 +81,32 @@ for folder_name in os.listdir(work_dir):
 
                     probs.append(prob)
                     labels.append(actual_class)
+                    multi_probs.append(probablity)
 
                 probs = np.array(probs)
                 labels = np.array(labels)
+                multi_probs = np.array(multi_probs)
                 ece = expected_calibration_error(probs, labels)
                 print(f'Model: {folder_path}\{file_name}, Expected Calibration Error (ECE): {ece}')
+
+                y_true_binary = label_binarize(labels, classes=[0, 1, 2])
+                average_precisions = []
+                for i in range(3):
+                    precision, recall, _ = precision_recall_curve(y_true_binary[:, i], multi_probs[:, i])
+                    average_precision = average_precision_score(y_true_binary[:, i], multi_probs[:, i])
+                    average_precisions.append(average_precision)
+                    print(f"Model: {folder_path}\{file_name}, Class {i} - AP: {average_precision}")
+                    if i == 0:
+                        normal_acc = average_precision
+                    elif i == 1:
+                        mandown_acc = average_precision
+                    elif i == 2:
+                        cross_acc = average_precision
+
+                # mAP 계산
+                mAP = np.mean(average_precisions)
+                print(f"Model: {folder_path}\{file_name}, Mean Average Precision (mAP): {mAP}")
+
 
                 parts = folder_name.split('_')
                 if parts[2] == 'A':
@@ -116,8 +144,8 @@ for folder_name in os.listdir(work_dir):
                     conv = 6
 
 
-                ece_list.append([parts[1], ece, group, LSTM, conv, augment, frame])
+                ece_list.append([parts[1], ece, group, LSTM, conv, augment, frame, mAP, normal_acc, mandown_acc, cross_acc])
 
-with open('ece_result.csv', 'w', newline ='') as file:
+with open('../ece_result.csv', 'w', newline ='') as file:
     writer = csv.writer(file)
     writer.writerows(ece_list)
