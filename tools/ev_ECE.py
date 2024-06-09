@@ -55,7 +55,7 @@ for folder_name in os.listdir(work_dir):
 
         # 폴더 내 CSV 파일 읽기
         for file_name in os.listdir(folder_path):
-            if file_name.endswith('h5'):
+            if file_name.endswith('.h5'):
                 pre_csv_name = f'{file_name}_pre_result.csv'
                 file_path = os.path.join(folder_path, pre_csv_name)
                 df = pd.read_csv(file_path)
@@ -146,6 +146,6 @@ for folder_name in os.listdir(work_dir):
 
                 ece_list.append([parts[1], ece, group, LSTM, conv, augment, frame, mAP, normal_acc, mandown_acc, cross_acc])
 
-with open('../ece_result.csv', 'w', newline ='') as file:
-    writer = csv.writer(file)
-    writer.writerows(ece_list)
+# with open('../ece_result.csv', 'w', newline ='') as file:
+#     writer = csv.writer(file)
+#     writer.writerows(ece_list)
