@@ -146,6 +146,6 @@ for folder_name in os.listdir(work_dir):
 
                 ece_list.append([parts[1], ece, group, LSTM, conv, augment, frame, mAP, normal_acc, mandown_acc, cross_acc])
 
-# with open('../ece_result.csv', 'w', newline ='') as file:
-#     writer = csv.writer(file)
-#     writer.writerows(ece_list)
+with open('../check_ece_result.csv', 'w', newline ='') as file:
+    writer = csv.writer(file)
+    writer.writerows(ece_list)
