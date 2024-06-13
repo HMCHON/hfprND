@@ -7,32 +7,35 @@ from sklearn.preprocessing import label_binarize
 
 def expected_calibration_error(probs, labels, num_bins=10):
     """
-    Calculate the Expected Calibration Error (ECE).
+    Compute the Expected Calibration Error (ECE) for multi-class classification.
 
-    Parameters:
-    probs (np.ndarray): Predicted probabilities for the positive class.
-    labels (np.ndarray): True binary labels (0 or 1).
-    num_bins (int): Number of bins to use for calibration.
-
-    Returns:
-    float: Expected Calibration Error.
+    :param predictions: Array of shape (n_samples, n_classes), predicted probabilities.
+    :param labels: Array of shape (n_samples,), ground truth labels.
+    :param num_bins: Number of bins to use for ECE calculation.
+    :return: Expected Calibration Error (ECE), accuracies, confidences, bin_centers.
     """
-    # Initialize the bins
     bin_boundaries = np.linspace(0, 1, num_bins + 1)
-    bin_lowers = bin_boundaries[:-1]
-    bin_uppers = bin_boundaries[1:]
+    bin_centers = (bin_boundaries[:-1] + bin_boundaries[1:]) / 2
+
+    # Get predicted class and confidence
+    predicted_class = np.argmax(probs, axis=1)
+    confidences = np.max(probs, axis=1)
+
+    # Initialize bins
+    accuracies = np.zeros(num_bins)
+    confidences_per_bin = np.zeros(num_bins)
+    bin_sizes = np.zeros(num_bins)
+
+    # Populate bins
+    for i in range(num_bins):
+        in_bin = (confidences > bin_boundaries[i]) & (confidences <= bin_boundaries[i + 1])
+        bin_sizes[i] = np.sum(in_bin)
+        if bin_sizes[i] > 0:
+            accuracies[i] = np.mean(predicted_class[in_bin] == labels[in_bin])
+            confidences_per_bin[i] = np.mean(confidences[in_bin])
 
     # Calculate ECE
-    ece = 0.0
-    for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
-        # Find the indices of the predictions that fall into the current bin
-        in_bin = (probs > bin_lower) & (probs <= bin_upper)
-        prop_in_bin = np.mean(in_bin)
-
-        if prop_in_bin > 0:
-            accuracy_in_bin = np.mean(labels[in_bin])
-            avg_confidence_in_bin = np.mean(probs[in_bin])
-            ece += np.abs(avg_confidence_in_bin - accuracy_in_bin) * prop_in_bin
+    ece = np.sum((bin_sizes / len(labels)) * np.abs(accuracies - confidences_per_bin))
 
     return ece
 
@@ -86,7 +89,7 @@ for folder_name in os.listdir(work_dir):
                 probs = np.array(probs)
                 labels = np.array(labels)
                 multi_probs = np.array(multi_probs)
-                ece = expected_calibration_error(probs, labels)
+                ece = expected_calibration_error(multi_probs, labels)
                 print(f'Model: {folder_path}\{file_name}, Expected Calibration Error (ECE): {ece}')
 
                 y_true_binary = label_binarize(labels, classes=[0, 1, 2])
@@ -146,6 +149,6 @@ for folder_name in os.listdir(work_dir):
 
                 ece_list.append([parts[1], ece, group, LSTM, conv, augment, frame, mAP, normal_acc, mandown_acc, cross_acc])
 
-with open('../check_ece_result.csv', 'w', newline ='') as file:
+with open('../result.csv', 'w', newline ='') as file:
     writer = csv.writer(file)
     writer.writerows(ece_list)
